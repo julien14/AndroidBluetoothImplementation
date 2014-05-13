@@ -1,8 +1,9 @@
 package fr.oversimple.bluetooth;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
-import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
@@ -27,26 +28,22 @@ public class BluetoothHandler extends BroadcastReceiver {
 	/* private variable */
 	private Context context;
 	/* The list of device discivered by this BluetoothHandler */
-	private Set<BluetoothDevice> devices;
-	
+	private List<BluetoothDevice> devices;
+
 	private BluetoothAdapter bluetoothAdapter;
 	private BluetoothDeviceDetectedEventListener bluetoothDeviceDetectedEventListener;
-	
-	@SuppressLint("InlinedApi")
+
 	public BluetoothHandler(Context context) {
 		this.context = context;
-		// Recommended by the android api : http://developer.android.com/reference/android/bluetooth/BluetoothAdapter.html
-		if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN_MR2) {
-			bluetoothAdapter = (BluetoothAdapter) context.getSystemService(Context.BLUETOOTH_SERVICE);
-		} else {
-			bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-		}
+		devices = new ArrayList<BluetoothDevice>();
+		bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 	}
 
 	/**
-	 * Start the Bluetooth scan add
-	 * a {@link BluetoothDeviceDetectedEventListener} with the {@link setBluetoothDeviceDetectedEventListener} 
-	 * to be informed of device detection
+	 * Start the Bluetooth scan add a
+	 * {@link BluetoothDeviceDetectedEventListener} with the
+	 * {@link setBluetoothDeviceDetectedEventListener} to be informed of device
+	 * detection
 	 */
 	public void startScan() {
 		IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
@@ -55,22 +52,27 @@ public class BluetoothHandler extends BroadcastReceiver {
 	}
 
 	/**
-	 * Stop the Bluetooth scan. Don't forget to call in the onDestroy method of your activity for example
+	 * Stop the Bluetooth scan. Don't forget to call in the onDestroy method of
+	 * your activity for example
 	 */
 	public void stopScan() {
 		bluetoothAdapter.cancelDiscovery();
 		context.unregisterReceiver(this);
 	}
-	
+
 	/**
 	 * 
-	 * Make your device visible to other devices for the specified amount of time
+	 * Make your device visible to other devices for the specified amount of
+	 * time
 	 * 
-	 * @param time the time your device will be visible
+	 * @param time
+	 *            the time your device will be visible
 	 */
 	public void beDiscoverable(int time) {
-		Intent discoverableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
-		discoverableIntent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, time);
+		Intent discoverableIntent = new Intent(
+				BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
+		discoverableIntent.putExtra(
+				BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, time);
 		context.startActivity(discoverableIntent);
 	}
 
@@ -91,7 +93,7 @@ public class BluetoothHandler extends BroadcastReceiver {
 	 * @return true is the Bluetooth is activatd on the device
 	 */
 	public boolean isBluetoothEnabled() {
-		if(isBluetoothPresentOnDevice()) {
+		if (isBluetoothPresentOnDevice()) {
 			return bluetoothAdapter.isEnabled();
 		} else {
 			return false;
@@ -100,6 +102,7 @@ public class BluetoothHandler extends BroadcastReceiver {
 
 	/**
 	 * Return the list of the devices already paired your device
+	 * 
 	 * @return the list of the devices already paired your device
 	 */
 	public Set<BluetoothDevice> getAllreadyBoundedDevices() {
@@ -107,22 +110,26 @@ public class BluetoothHandler extends BroadcastReceiver {
 	}
 
 	/**
-	 * Return the devices discovered since the {@link startScan()} method have been called
+	 * Return the devices discovered since the {@link startScan()} method have
+	 * been called
+	 * 
 	 * @return all the device discovered
 	 */
-	public Set<BluetoothDevice> getDiscoveredDevices() {
+	public List<BluetoothDevice> getDiscoveredDevices() {
 		return devices;
 	}
 
 	/**
-	 * Set a {@link BluetoothDeviceDetectedEventListener}. This listener is unique and will be called 
-	 * every time a new device is discovered;
+	 * Set a {@link BluetoothDeviceDetectedEventListener}. This listener is
+	 * unique and will be called every time a new device is discovered;
+	 * 
 	 * @param eventListener
 	 */
-	public void setBluetoothDeviceDetectedEventListener(BluetoothDeviceDetectedEventListener eventListener) {
+	public void setBluetoothDeviceDetectedEventListener(
+			BluetoothDeviceDetectedEventListener eventListener) {
 		bluetoothDeviceDetectedEventListener = eventListener;
 	}
-	
+
 	@Override
 	public void onReceive(Context context, Intent intent) {
 		String action = intent.getAction();
@@ -130,12 +137,14 @@ public class BluetoothHandler extends BroadcastReceiver {
 			BluetoothDevice device = (BluetoothDevice) intent
 					.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
 			
-			devices.add(device);
-			
-			if(null != bluetoothDeviceDetectedEventListener) {
+			if(!devices.contains(device)) {
+				devices.add(device);
+			}
+
+			if (null != bluetoothDeviceDetectedEventListener) {
 				bluetoothDeviceDetectedEventListener.deviceDetected(device);
 			}
-			
+
 		}
 	}
 
