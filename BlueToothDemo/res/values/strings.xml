@@ -2,7 +2,7 @@
 <resources>
 
     <string name="app_name">BlueToothDemo</string>
-    <string name="hello_world">Hello world!</string>
+    <string name="no_devices_detected">No devices detected</string>
     <string name="action_settings">Settings</string>
 
 </resources>

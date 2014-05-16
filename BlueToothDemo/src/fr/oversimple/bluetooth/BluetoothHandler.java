@@ -142,7 +142,7 @@ public class BluetoothHandler extends BroadcastReceiver {
 			}
 
 			if (null != bluetoothDeviceDetectedEventListener) {
-				bluetoothDeviceDetectedEventListener.deviceDetected(device);
+				bluetoothDeviceDetectedEventListener.deviceDetected();
 			}
 
 		}

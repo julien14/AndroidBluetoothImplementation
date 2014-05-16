@@ -1,14 +1,10 @@
 package fr.oversimple.bluetoothdemo;
 
+import java.util.Iterator;
+
 import android.app.Activity;
-import android.app.Fragment;
 import android.bluetooth.BluetoothDevice;
 import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.example.bluetoothdemo.R;
@@ -38,8 +34,13 @@ public class MainActivity extends Activity implements BluetoothDeviceDetectedEve
 	}
 
 	@Override
-	public void deviceDetected(BluetoothDevice device) {
-		deviceListTextview.setText(bluetoothHandler.getDiscoveredDevices().toString());
+	public void deviceDetected() {
+		Iterator<BluetoothDevice> it = bluetoothHandler.getDiscoveredDevices().iterator();
+		
+		while(it.hasNext()) {
+			BluetoothDevice c_device = it.next();
+			deviceListTextview.append(c_device.getName() + " " + c_device.getAddress());
+		}
 	}
 	
 }
